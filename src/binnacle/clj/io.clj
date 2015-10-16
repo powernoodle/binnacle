@@ -12,20 +12,32 @@
           files))
 
 (defn relative-path
-  [path root-path]
-  (str/replace path root-path ""))
+  [file root-path]
+  (-> (.getPath file)
+      (str/replace root-path "")
+      (str/replace "/" ".")))
+
+(defn clean-name
+  [file root-path]
+  (-> (relative-path file root-path)
+      (str/replace ".svg" "")))
 
 (defn construct-map
   [files root-path]
   (into {}
         (map #(hash-map
-               (keyword (relative-path (.getPath %) root-path))
+               (keyword (clean-name % root-path))
                (read-contents %))
              files)))
 
-(defmacro svg-map
-  [root-path]
-  (let [dir (io/file root-path)
+(defn svg-map
+  []
+  (let [root-path "resources/images/"
+        dir (io/file root-path)
         files (file-seq dir)
         svgs (get-svgs files)]
     (construct-map svgs root-path)))
+
+(defmacro svg-map-cljs
+  []
+  (svg-map))

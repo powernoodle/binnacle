@@ -1,7 +1,7 @@
 (ns binnacle.core
-  #?@(:clj [(:require [binnacle.clj.io :as io :refer [svg-map]])
+  #?@(:clj [(:require [binnacle.clj.io :as io])
             (:import (java.net URLEncoder URLDecoder))])
-  #?(:cljs (:require-macros [binnacle.clj.io :as io :refer [svg-map]])))
+  #?(:cljs (:require-macros [binnacle.clj.io :as io])))
 
 #?(:cljs
 (enable-console-print!))
@@ -32,4 +32,5 @@
 
 (defn get-images
   []
-  (css-ready (io/svg-map "resources/images/")))
+  (css-ready #?(:clj (io/svg-map))
+             #?(:cljs (io/svg-map-cljs))))
