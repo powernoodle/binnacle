@@ -1,4 +1,4 @@
-(defproject binnacle "0.1.0"
+(defproject com.powernoodle/binnacle "0.1.0"
   :description "Binnacle constructs hash-maps of all image data within a directory"
   :url "http://github.com/powernoodle/binnacle"
   :license {:name "Eclipse Public License"
