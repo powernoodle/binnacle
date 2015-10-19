@@ -4,7 +4,8 @@
 
 (defn read-contents
   [file]
-  (slurp file))
+  (str/trim-newline
+   (slurp file)))
 
 (defn get-svgs
   [files]

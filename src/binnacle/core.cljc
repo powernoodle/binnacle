@@ -27,10 +27,15 @@
 
 (defn css-ready
   [m]
-  (mapfn m #(str "data:image/svg+xml;utf8,"
-                 (encode %))))
+  (mapfn m #(str "url(data:image/svg+xml;utf8,"
+                 (encode %)
+                 ")")))
 
-(defn get-images
+(defn images
   []
   (css-ready #?(:clj (io/svg-map))
              #?(:cljs (io/svg-map-cljs))))
+
+(defn -main
+  []
+  (println (images)))

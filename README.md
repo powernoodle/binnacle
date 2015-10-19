@@ -12,7 +12,7 @@ Add the following dependency to your project.clj file:
 
 Place all of your images within `resources/images`.
 
-Access your images hash-map from `binnacle.core/get-images` in your Clojure(Script) project!
+Access your images hash-map from `binnacle.core/images` in your Clojure(Script) project!
 
 ## License
 

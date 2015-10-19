@@ -1,4 +1,4 @@
-(defproject com.powernoodle/binnacle "0.1.1"
+(defproject com.powernoodle/binnacle "0.1.2"
   :description "Binnacle constructs hash-maps of all image data within a directory"
   :url "http://github.com/powernoodle/binnacle"
   :license {:name "Eclipse Public License"
@@ -8,6 +8,7 @@
   :source-paths ["src"]
   :plugins [[lein-cljsbuild "1.1.0"]
             [lein-figwheel "0.4.1"]]
+  :main binnacle.core
   :cljsbuild {
     :builds [{:id "figwheel"
               :source-paths ["src/"]
