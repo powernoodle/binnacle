@@ -1,44 +1,45 @@
 (ns binnacle.clj.io
   (:require [clojure.java.io :as io]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [clojure.data.codec.base64 :as b64]
+            [binnacle.codec :as codec]
+            [binnacle.mime :as mime]))
 
-(defn read-contents
+(defn svg-contents
   [file]
-  (str/trim-newline
-   (slurp file)))
+  (str/trim-newline (slurp file)))
 
-(defn get-svgs
-  [files]
-  (filter #(.endsWith (.getName %) ".svg")
-          files))
+(defn file-bytes
+  [file]
+  (with-open [reader (io/input-stream (.getPath file))]
+    (let [length (.length file)
+          buffer (byte-array length)]
+      (.read reader buffer 0 length)
+      buffer)))
 
-(defn relative-path
-  [file root-path]
-  (-> (.getPath file)
-      (str/replace root-path "")
-      (str/replace "/" ".")))
+(defn files-in-dir
+  [resources-path]
+  (let [files (file-seq (io/file resources-path))]
+    (filter #((some-fn mime/image? mime/font?) (mime/extension (.getPath %)))
+            files)))
 
-(defn clean-name
-  [file root-path]
-  (-> (relative-path file root-path)
-      (str/replace ".svg" "")))
+(defn path
+  [file]
+  (vec (map keyword
+            (str/split (.getPath file) #"/"))))
 
-(defn construct-map
-  [files root-path]
-  (into {}
-        (map #(hash-map
-               (keyword (clean-name % root-path))
-               (read-contents %))
-             files)))
+(defn file-map
+  [resources-path]
+  (reduce #(assoc-in %1
+                     (first %2)
+                     (second %2))
+          {}
+          (map #(vector (path %)
+                        (if (mime/svg? (mime/extension (.getPath %)))
+                          (svg-contents %)
+                          (codec/encode (file-bytes %))))
+               (files-in-dir resources-path))))
 
-(defn svg-map
-  []
-  (let [root-path "resources/images/"
-        dir (io/file root-path)
-        files (file-seq dir)
-        svgs (get-svgs files)]
-    (construct-map svgs root-path)))
-
-(defmacro svg-map-cljs
-  []
-  (svg-map))
+(defmacro file-map-cljs
+  [resources-path]
+  (file-map resources-path))
