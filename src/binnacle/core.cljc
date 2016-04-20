@@ -3,9 +3,6 @@
             [binnacle.mime :as mime])
   #?(:clj  (:require [binnacle.clj.io :as io])))
 
-#?(:cljs
-(enable-console-print!))
-
 (defn data-url
   [files path]
   (str "data:"
@@ -20,7 +17,3 @@
 (defn assets
   [path]
   (io/file-map path)))
-
-(defn -main
-  []
-  (spit "resources/images.edn" (assets "resources")))
