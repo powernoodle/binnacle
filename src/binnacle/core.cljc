@@ -1,8 +1,7 @@
 (ns binnacle.core
   (:require [binnacle.codec :as codec]
             [binnacle.mime :as mime])
-  #?(:clj  (:require [binnacle.clj.io :as io]))
-  #?(:cljs (:require-macros [binnacle.clj.io :as io])))
+  #?(:clj  (:require [binnacle.clj.io :as io])))
 
 #?(:cljs
 (enable-console-print!))
@@ -17,10 +16,10 @@
          "base64,")
        (get-in files path)))
 
+#?(:clj
 (defn assets
   [path]
-  #?(:clj (io/file-map path))
-  #?(:cljs (io/file-map-cljs path)))
+  (io/file-map path)))
 
 (defn -main
   []

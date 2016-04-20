@@ -5,7 +5,7 @@
             [binnacle.codec :as codec]
             [binnacle.mime :as mime]))
 
-(defn svg-contents
+(defn file-contents
   [file]
   (str/trim-newline (slurp file)))
 
@@ -36,10 +36,6 @@
           {}
           (map #(vector (path %)
                         (if (mime/svg? (mime/extension (.getPath %)))
-                          (svg-contents %)
+                          (file-contents %)
                           (codec/encode (file-bytes %))))
                (files-in-dir resources-path))))
-
-(defmacro file-map-cljs
-  [resources-path]
-  (file-map resources-path))
