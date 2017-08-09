@@ -1,13 +1,9 @@
 (ns binnacle.clj.io
-  (:require [clojure.java.io :as io]
-            [clojure.string :as str]
-            [clojure.data.codec.base64 :as b64]
-            [binnacle.codec :as codec]
-            [binnacle.mime :as mime]))
-
-(defn file-contents
-  [file]
-  (str/trim-newline (slurp file)))
+  (:require [binnacle.codec :as codec]
+            [binnacle.mime :as mime]
+            [binnacle.svg :as svg]
+            [clojure.java.io :as io]
+            [clojure.string :as string]))
 
 (defn file-bytes
   [file]
@@ -19,23 +15,20 @@
 
 (defn files-in-dir
   [resources-path]
-  (let [files (file-seq (io/file resources-path))]
-    (filter #((some-fn mime/image? mime/font?) (mime/extension (.getPath %)))
-            files)))
+  (->> (file-seq (io/file resources-path))
+       (filter #((some-fn mime/image? mime/font?)
+                 (mime/extension (.getPath %))))))
 
 (defn path
   [file]
-  (vec (map keyword
-            (str/split (.getPath file) #"/"))))
+  (map keyword (string/split (.getPath file) #"/")))
 
 (defn file-map
   [resources-path]
-  (reduce #(assoc-in %1
-                     (first %2)
-                     (second %2))
+  (reduce #(assoc-in %1 (first %2) (second %2))
           {}
           (map #(vector (path %)
                         (if (mime/svg? (mime/extension (.getPath %)))
-                          (file-contents %)
-                          (codec/encode (file-bytes %))))
+                          (svg/as-hiccup %)
+                          (codec/base64-encode (file-bytes %))))
                (files-in-dir resources-path))))

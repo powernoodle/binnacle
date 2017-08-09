@@ -1,28 +1,19 @@
 (ns binnacle.mime
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as string]))
 
-(defn svg?
-  [ext]
-  (= ext "svg"))
+(defn svg? [ext] (= ext "svg"))
 
-(defn font?
-  [ext]
-  (= ext "woff"))
+(defn font? [ext] (string/starts-with? ext "woff"))
 
-(defn image?
-  [ext]
-  (contains? #{"png" "jpg" "gif" "svg"} ext))
+(defn image? [ext] (contains? #{"png" "jpg" "gif" "svg"} ext))
 
-(defn extension
-  [s]
-  (last (str/split (name s) #"\.")))
+(defn extension [filename] (last (string/split (name filename) #"\.")))
 
 (defn mime
-  [ext]
-  (cond
-    (image? ext)
-    (if (svg? ext)
-      (str "image/" ext "+xml")
-      (str "image/" ext))
-    (font? ext)
-    (str "application/x-font-" ext)))
+  [path]
+  (let [ext (extension (last path))]
+    (cond
+      (image? ext) (if (svg? ext)
+                     (str "image/" ext "+xml")
+                     (str "image/" ext))
+      (font? ext) (str "application/x-font-" ext))))
