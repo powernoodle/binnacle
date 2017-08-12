@@ -1,22 +1,16 @@
 (ns binnacle.core
   (:require [binnacle.codec :as codec]
             [binnacle.mime :as mime]
-    #?(:clj [binnacle.clj.io :as io])))
+            [binnacle.svg :as svg]
+            #?(:clj [binnacle.clj.io :as io])))
 
 (defn data-url
-  [assets path & fns]
-  (str "data:"
-       (mime/mime (mime/extension (last path)))
-       ";"
-       (if (mime/svg? (mime/extension (last path)))
-         "utf8,"
-         "base64,")
-       (-> (reduce #(%2 %1)
-                   (get-in assets path)
-                   fns)
-           (codec/url-encode))))
+  [assets path]
+  (let [mime (mime/mime path)
+        resource (get-in assets path)]
+    (str "data:" mime ";"
+         (if (= mime "image/svg+xml")
+           (str "utf8," (codec/url-encode (svg/as-html resource)))
+           (str "base64," (codec/base64-encode resource))))))
 
-#?(:clj
-(defn assets
-  [path]
-  (io/file-map path)))
+#?(:clj (defn assets [path] (io/file-map path)))
